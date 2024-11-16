@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Guess the Sorting Algorithm</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="quizContainer">
+        <h1>Guess the Sorting Algorithm!</h1>
+        <canvas id="sortingChart" width="400" height="200"></canvas>
+        <button id="startButton">Start Sorting</button>
+
+        <div id="guessContainer">
+            <p>Select the algorithm you think was used:</p>
+            <button class="guessButton" onclick="checkGuess('Bubble Sort')">Bubble Sort</button>
+            <button class="guessButton" onclick="checkGuess('Quick Sort')">Quick Sort</button>
+            <button class="guessButton" onclick="checkGuess('Merge Sort')">Merge Sort</button>
+            <button class="guessButton" onclick="checkGuess('Insertion Sort')">Insertion Sort</button>
+        </div>
+        <div id="resultMessage"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="quiz.js"></script> 
+</body>
+</html>

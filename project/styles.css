@@ -1,0 +1,104 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #181818;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+.container {
+  width: 80%;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+input[type="text"], select {
+  margin: 5px;
+  padding: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  background-color: #3498db;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+#arrayContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 300px;
+  border: 1px solid #3498db;
+}
+
+.bar {
+  width: 30px;
+  margin: 0 2px;
+  background-color: #3498db;
+}
+
+
+#resultMessage {
+  margin-top: 20px;
+  font-size: 1.5rem;
+  color: green;
+}
+
+#quizContainer {
+  width: 60%;
+  margin: 100px auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+#graphContainer {
+  text-align: center;
+}
+
+.node {
+  fill: #3498db;
+  cursor: pointer;
+}
+
+.node.active {
+  fill: #e74c3c;
+}
+
+.edge {
+  stroke: #000;
+  stroke-width: 2;
+}
+
+.edge.active {
+  stroke: #e74c3c;
+}
+
+
+.node {
+  fill: #3498db;
+  cursor: pointer;
+}
+
+.node.active {
+  fill: #e74c3c; /* Culoare activă pentru nodul selectat */
+}

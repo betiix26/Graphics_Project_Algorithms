@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maze</title>
+  <style>
+    body { margin: 0; display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100vh; 
+      background-color: #121212; 
+      color: #ffffff;}
+    canvas { border: 1px solid black; cursor: crosshair; }
+    button { margin-top: 20px; padding: 10px; }
+  </style>
+</head>
+<body>
+  <canvas id="mazeCanvas"></canvas>
+  <div>
+    <button onclick="startSolving('bfs')">Solve with BFS</button>
+    <button onclick="startSolving('dfs')">Solve with DFS</button>
+    <button onclick="startSolving('astar')">Solve with A*</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('mazeCanvas');
+    const ctx = canvas.getContext('2d');
+    const N = 20; 
+    const cellSize = 30; 
+    canvas.width = N * cellSize;
+    canvas.height = N * cellSize;
+
+    let maze = [];
+    let start = { x: 1, y: 1 }; 
+    let end = { x: N - 2, y: N - 2 };
+    let isDrawingWalls = false;
+    let isErasingWalls = false;
+
+    // Initialize maze with walls and start/end positions
+    function initializeMaze() {
+      maze = [];
+      for (let y = 0; y < N; y++) {
+        maze[y] = [];
+        for (let x = 0; x < N; x++) {
+          maze[y][x] = { wall: false, visited: false };
+        }
+      }
+
+      maze[start.y][start.x].wall = false;
+      maze[end.y][end.x].wall = false;
+
+      drawMaze();
+    }
+
+    // Draw the maze with walls, start, and end
+    function drawMaze() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let y = 0; y < N; y++) {
+        for (let x = 0; x < N; x++) {
+          ctx.fillStyle = maze[y][x].wall ? 'black' : 'white';
+          ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+          ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        }
+      }
+
+      ctx.fillStyle = 'green';
+      ctx.fillRect(start.x * cellSize, start.y * cellSize, cellSize, cellSize);
+
+      ctx.fillStyle = 'red';
+      ctx.fillRect(end.x * cellSize, end.y * cellSize, cellSize, cellSize);
+    }
+
+    // Event listeners to draw or remove walls
+    canvas.addEventListener('mousedown', (event) => {
+      const { offsetX, offsetY } = event;
+      const x = Math.floor(offsetX / cellSize);
+      const y = Math.floor(offsetY / cellSize);
+
+      if (event.button === 0) { // Left click to draw walls
+        isDrawingWalls = true;
+        if (x !== start.x || y !== start.y && x !== end.x || y !== end.y) {
+          maze[y][x].wall = true;
+        }
+      } else if (event.button === 2) { // Right click to erase walls
+        isErasingWalls = true;
+        if (x !== start.x || y !== start.y && x !== end.x || y !== end.y) {
+          maze[y][x].wall = false;
+        }
+      }
+      drawMaze();
+    });
+
+    canvas.addEventListener('mousemove', (event) => {
+      const { offsetX, offsetY } = event;
+      const x = Math.floor(offsetX / cellSize);
+      const y = Math.floor(offsetY / cellSize);
+
+      if (isDrawingWalls && (x !== start.x || y !== start.y) && (x !== end.x || y !== end.y)) {
+        maze[y][x].wall = true;
+        drawMaze();
+      }
+
+      if (isErasingWalls && (x !== start.x || y !== start.y) && (x !== end.x || y !== end.y)) {
+        maze[y][x].wall = false;
+        drawMaze();
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      isDrawingWalls = false;
+      isErasingWalls = false;
+    });
+
+    // Context menu to delete a wall on right-click (smooth erase)
+    canvas.addEventListener('contextmenu', (event) => {
+      event.preventDefault(); // Prevent the default context menu
+      const { offsetX, offsetY } = event;
+      const x = Math.floor(offsetX / cellSize);
+      const y = Math.floor(offsetY / cellSize);
+
+      // Remove the wall if right-clicked on it
+      if ((x !== start.x || y !== start.y) && (x !== end.x || y !== end.y) && maze[y][x].wall) {
+        maze[y][x].wall = false;
+        drawMaze();
+      }
+    });
+
+
+    // BFS Algorithm
+    async function bfs() {
+      const queue = [start];
+      const visited = new Set();
+      const parentMap = new Map();
+
+      visited.add(`${start.x},${start.y}`);
+      while (queue.length > 0) {
+        const current = queue.shift();
+        if (current.x === end.x && current.y === end.y) {
+          let path = [];
+          let temp = current;
+          while (temp) {
+            path.push(temp);
+            temp = parentMap.get(`${temp.x},${temp.y}`);
+          }
+          path.reverse();
+          drawSolution(path, 'red');
+          return;
+        }
+
+        const directions = [
+          { dx: 1, dy: 0 },
+          { dx: -1, dy: 0 },
+          { dx: 0, dy: 1 },
+          { dx: 0, dy: -1 }
+        ];
+
+        for (let dir of directions) {
+          const nx = current.x + dir.dx;
+          const ny = current.y + dir.dy;
+          if (nx >= 0 && nx < N && ny >= 0 && ny < N && !maze[ny][nx].wall && !visited.has(`${nx},${ny}`)) {
+            visited.add(`${nx},${ny}`);
+            queue.push({ x: nx, y: ny });
+            parentMap.set(`${nx},${ny}`, current);
+          }
+        }
+      }
+    }
+
+    // DFS Algorithm
+    async function dfs() {
+      const stack = [start];
+      const visited = new Set();
+      const parentMap = new Map();
+
+      visited.add(`${start.x},${start.y}`);
+      while (stack.length > 0) {
+        const current = stack.pop();
+        if (current.x === end.x && current.y === end.y) {
+          let path = [];
+          let temp = current;
+          while (temp) {
+            path.push(temp);
+            temp = parentMap.get(`${temp.x},${temp.y}`);
+          }
+          path.reverse();
+          drawSolution(path, 'yellow');
+          return;
+        }
+
+        const directions = [
+          { dx: 1, dy: 0 },
+          { dx: -1, dy: 0 },
+          { dx: 0, dy: 1 },
+          { dx: 0, dy: -1 }
+        ];
+
+        for (let dir of directions) {
+          const nx = current.x + dir.dx;
+          const ny = current.y + dir.dy;
+          if (nx >= 0 && nx < N && ny >= 0 && ny < N && !maze[ny][nx].wall && !visited.has(`${nx},${ny}`)) {
+            visited.add(`${nx},${ny}`);
+            stack.push({ x: nx, y: ny });
+            parentMap.set(`${nx},${ny}`, current);
+          }
+        }
+      }
+    }
+
+    // A* Algorithm
+    async function astar() {
+      const openSet = [start];
+      const gScores = Array.from({ length: N }, () => Array(N).fill(Infinity));
+      const fScores = Array.from({ length: N }, () => Array(N).fill(Infinity));
+      const parentMap = new Map();
+
+      gScores[start.y][start.x] = 0;
+      fScores[start.y][start.x] = heuristic(start, end);
+
+      while (openSet.length > 0) {
+        openSet.sort((a, b) => fScores[a.y][a.x] - fScores[b.y][b.x]);
+        const current = openSet.shift();
+
+        if (current.x === end.x && current.y === end.y) {
+          let path = [];
+          let temp = current;
+          while (temp) {
+            path.push(temp);
+            temp = parentMap.get(`${temp.x},${temp.y}`);
+          }
+          path.reverse();
+          drawSolution(path, 'blue');
+          return;
+        }
+
+        const directions = [
+          { dx: 1, dy: 0 },
+          { dx: -1, dy: 0 },
+          { dx: 0, dy: 1 },
+          { dx: 0, dy: -1 }
+        ];
+
+        for (let dir of directions) {
+          const nx = current.x + dir.dx;
+          const ny = current.y + dir.dy;
+
+          if (nx >= 0 && nx < N && ny >= 0 && ny < N && !maze[ny][nx].wall) {
+            const tentativeGScore = gScores[current.y][current.x] + 1;
+            if (tentativeGScore < gScores[ny][nx]) {
+              parentMap.set(`${nx},${ny}`, current);
+              gScores[ny][nx] = tentativeGScore;
+              fScores[ny][nx] = gScores[ny][nx] + heuristic({ x: nx, y: ny }, end);
+              openSet.push({ x: nx, y: ny });
+            }
+          }
+        }
+      }
+    }
+
+    // Heuristic for A*
+    function heuristic(a, b) {
+      return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    }
+
+    // Draw solution with color
+    function drawSolution(path, color) {
+      path.forEach((step, index) => {
+        setTimeout(() => {
+          ctx.fillStyle = color;
+          ctx.fillRect(step.x * cellSize, step.y * cellSize, cellSize, cellSize);
+        }, index * 100);
+      });
+    }
+
+    // Start solving
+    function startSolving(algorithm) {
+      switch (algorithm) {
+        case 'bfs':
+          bfs();
+          break;
+        case 'dfs':
+          dfs();
+          break;
+        case 'astar':
+          astar();
+          break;
+        default:
+          break;
+      }
+    }
+
+    // Initialize maze
+    initializeMaze();
+  </script>
+</body>
+</html>
