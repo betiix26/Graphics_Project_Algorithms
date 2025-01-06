@@ -61,9 +61,10 @@ function selectNode(node) {
     document.getElementById('info').innerText = `Selected node: ${node.id}`;
 }
 
-function highlightNode(nodeId) {
+function highlightNode(nodeId, color) {
     const node = document.querySelector(`.node[data-id="${nodeId}"]`);
     node.classList.add('active');
+    node.style.fill = color;  // Modifică culoarea nodului
     node.animate([
         { transform: 'scale(1)' },
         { transform: 'scale(1.2)' },
@@ -82,7 +83,7 @@ async function dfs(startNodeId) {
         const nodeId = stack.pop();
         if (!visited.has(nodeId)) {
             visited.add(nodeId);
-            highlightNode(nodeId);
+            highlightNode(nodeId, 'red');
             await sleep(speed);
             const neighbors = edges.filter(e => e.source === nodeId || e.target === nodeId);
             neighbors.forEach(edge => {
@@ -100,7 +101,7 @@ async function bfs(startNodeId) {
         const nodeId = queue.shift();
         if (!visited.has(nodeId)) {
             visited.add(nodeId);
-            highlightNode(nodeId);
+            highlightNode(nodeId, 'blue');
             await sleep(1000);
             const neighbors = edges.filter(e => e.source === nodeId || e.target === nodeId);
             neighbors.forEach(edge => {
@@ -131,7 +132,7 @@ document.getElementById('startBFS').addEventListener('click', () => {
 document.getElementById('addNode').addEventListener('click', () => {
     const newNodeId = nodes.length + 1;
     nodes.push({ id: newNodeId, x: Math.random() * 800, y: Math.random() * 600 });
-    
+
     // Check if a node is selected to create an edge
     if (selectedNode) {
         edges.push({ source: selectedNode.id, target: newNodeId });

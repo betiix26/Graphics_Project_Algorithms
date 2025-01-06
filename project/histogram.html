@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Histogram Algorithm</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #1662c5, #002a4e);
+      color: #ecf0f1;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #1a73e8, #003b70);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .input-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #7f8c8d;
+      border-radius: 5px;
+      width: 70%;
+      max-width: 400px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #3498db;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    canvas {
+      background-color: #ffffff;
+      border-radius: 10px;
+      margin: 20px auto;
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Histogram Algorithm</h1>
+    <div class="input-container">
+      <label for="dataInput" style="font-size: 1.2rem;">Enter values (comma-separated):</label>
+      <input type="text" id="dataInput" placeholder="e.g., 1, 2, 2, 3, 3, 3, 4, 5">
+      <button onclick="generateHistogram()">Generate Histogram</button>
+    </div>
+    <canvas id="histogramChart" width="800" height="400"></canvas>
+  </div>
+
+  <script>
+    let chartInstance;
+
+    function generateHistogram() {
+      const inputData = document.getElementById("dataInput").value;
+      const values = inputData.split(",").map(Number).filter(n => !isNaN(n));
+
+      if (values.length === 0) {
+        alert("Please enter valid numeric data!");
+        return;
+      }
+
+      // Compute frequency distribution
+      const frequency = {};
+      values.forEach(value => {
+        frequency[value] = (frequency[value] || 0) + 1;
+      });
+
+      const labels = Object.keys(frequency).map(Number).sort((a, b) => a - b);
+      const data = labels.map(label => frequency[label]);
+
+      // Destroy previous chart instance if exists
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      // Create histogram chart
+      const ctx = document.getElementById("histogramChart").getContext("2d");
+      chartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Frequency",
+            data: data,
+            backgroundColor: "rgba(52, 152, 219, 0.7)",
+            borderColor: "rgba(41, 128, 185, 1)",
+            borderWidth: 1,
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Values",
+                color: "#ecf0f1"
+              },
+              ticks: {
+                color: "#ecf0f1"
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Frequency",
+                color: "#ecf0f1"
+              },
+              ticks: {
+                beginAtZero: true,
+                color: "#ecf0f1"
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: "#ecf0f1"
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>

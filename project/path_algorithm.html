@@ -1,35 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maze</title>
+  <title>Maze Solver</title>
   <style>
-    body { margin: 0; display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100vh; 
-      background-color: #121212; 
-      color: #ffffff;}
-    canvas { border: 1px solid black; cursor: crosshair; }
-    button { margin-top: 20px; padding: 10px; }
+    /* General reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* Body styles */
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a73e8, #003b70);
+      color: white;
+    }
+
+    /* Header */
+    header {
+      width: 100%;
+      text-align: center;
+      padding: 20px 0;
+      background: rgba(0, 0, 0, 0.2);
+      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
+      font-size: 1.5rem;
+    }
+
+    /* Main content */
+    main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 1200px;
+      text-align: center;
+    }
+
+    /* Canvas */
+    canvas {
+      border: 3px solid #fff;
+      cursor: crosshair;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Buttons container */
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    /* Buttons */
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #fff;
+      background: linear-gradient(135deg, #ff7e5f, #feb47b);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
+      margin-top: -40px;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #feb47b, #ff7e5f);
+    }
+
+    .reset-button {
+      background: linear-gradient(135deg, #ff4757, #ff6b81);
+      margin-top: 0;
+    }
+
+    .reset-button:hover {
+      background: linear-gradient(135deg, #ff6b81, #ff4757);
+    }
   </style>
 </head>
+
 <body>
+  <header>
+    Maze Solver Application
+  </header>
   <canvas id="mazeCanvas"></canvas>
   <div>
     <button onclick="startSolving('bfs')">Solve with BFS</button>
     <button onclick="startSolving('dfs')">Solve with DFS</button>
     <button onclick="startSolving('astar')">Solve with A*</button>
+    <button onclick="resetMaze()" class="reset-button">Reset Maze</button>
   </div>
 
   <script>
     const canvas = document.getElementById('mazeCanvas');
     const ctx = canvas.getContext('2d');
-    const N = 20; 
-    const cellSize = 30; 
+    const N = 20;
+    const cellSize = 30;
     canvas.width = N * cellSize;
     canvas.height = N * cellSize;
 
     let maze = [];
-    let start = { x: 1, y: 1 }; 
+    let start = { x: 1, y: 1 };
     let end = { x: N - 2, y: N - 2 };
     let isDrawingWalls = false;
     let isErasingWalls = false;
@@ -48,6 +132,12 @@
       maze[end.y][end.x].wall = false;
 
       drawMaze();
+    }
+
+    function resetMaze() {
+      start = { x: 1, y: 1 };
+      end = { x: N - 2, y: N - 2 };
+      initializeMaze();
     }
 
     // Draw the maze with walls, start, and end
@@ -290,4 +380,5 @@
     initializeMaze();
   </script>
 </body>
+
 </html>

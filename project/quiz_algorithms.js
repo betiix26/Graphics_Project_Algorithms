@@ -2,6 +2,7 @@ let sortingChart;
 let data = [];
 let correctAlgorithm = '';
 let algorithms = ['Bubble Sort', 'Quick Sort', 'Merge Sort', 'Insertion Sort'];
+let isSorting = false;
 
 function randomData() {
     return Array.from({ length: 10 }, () => Math.floor(Math.random() * 100));
@@ -18,8 +19,10 @@ function sleep(ms) {
 
 // Bubble Sort Visualization
 async function bubbleSort(data) {
+    isSorting = true;
     for (let i = 0; i < data.length; i++) {
         for (let j = 0; j < data.length - i - 1; j++) {
+            if (resetTriggered) return;
             if (data[j] > data[j + 1]) {
                 [data[j], data[j + 1]] = [data[j + 1], data[j]]; // Swap
                 updateChart(data);
@@ -27,46 +30,53 @@ async function bubbleSort(data) {
             }
         }
     }
-    correctAlgorithm = 'Bubble Sort';
+    if (isSorting) correctAlgorithm = 'Bubble Sort';
+    isSorting = false;
 }
 
 // Quick Sort Visualization
 async function quickSort(data, left = 0, right = data.length - 1) {
-    if (left >= right) return;
+    if (!isSorting || left >= right) return;
 
     const pivot = data[right];
     let partitionIndex = left;
 
-    for (let i = left; i < right; i++) {
+    for (let i = left; i < right && isSorting; i++) {
         if (data[i] < pivot) {
             [data[i], data[partitionIndex]] = [data[partitionIndex], data[i]];
             partitionIndex++;
             updateChart(data);
-            await sleep(500); // Slow down for visualization
+            await sleep(500);
         }
     }
     [data[partitionIndex], data[right]] = [data[right], data[partitionIndex]];
     updateChart(data);
     await sleep(500);
 
-    await quickSort(data, left, partitionIndex - 1);
-    await quickSort(data, partitionIndex + 1, right);
+    if (isSorting) await quickSort(data, left, partitionIndex - 1);
+    if (isSorting) await quickSort(data, partitionIndex + 1, right);
 
-    correctAlgorithm = 'Quick Sort';
+    if (isSorting) correctAlgorithm = 'Quick Sort';
+    isSorting = false;
 }
 
 function startSorting() {
+    if (isSorting) return;
+
     data = randomData();
     updateChart(data);
 
     const randomAlgorithm = algorithms[Math.floor(Math.random() * algorithms.length)];
+    isSorting = true;
+
     if (randomAlgorithm === 'Bubble Sort') {
         bubbleSort([...data]);
     } else if (randomAlgorithm === 'Quick Sort') {
         quickSort([...data]);
     } else if (randomAlgorithm === 'Merge Sort') {
         mergeSort([...data]).then(sortedData => {
-            correctAlgorithm = 'Merge Sort';
+            if (isSorting) correctAlgorithm = 'Merge Sort';
+            isSorting = false;
         });
     } else if (randomAlgorithm === 'Insertion Sort') {
         insertionSort([...data]);
@@ -75,7 +85,7 @@ function startSorting() {
 
 // Merge Sort Visualization
 async function mergeSort(data) {
-    if (data.length <= 1) {
+    if (!isSorting || data.length <= 1) {
         return data;
     }
 
@@ -91,7 +101,7 @@ async function merge(left, right) {
     let leftIndex = 0;
     let rightIndex = 0;
 
-    while (leftIndex < left.length && rightIndex < right.length) {
+    while (leftIndex < left.length && rightIndex < right.length && isSorting) {
         if (left[leftIndex] < right[rightIndex]) {
             result.push(left[leftIndex]);
             leftIndex++;
@@ -100,7 +110,7 @@ async function merge(left, right) {
             rightIndex++;
         }
         updateChart([...result, ...left.slice(leftIndex), ...right.slice(rightIndex)]);
-        await sleep(500); // Vizualizare lentă
+        await sleep(500);
     }
 
     return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));
@@ -109,21 +119,23 @@ async function merge(left, right) {
 
 // Insertion Sort Visualization
 async function insertionSort(data) {
-    for (let i = 1; i < data.length; i++) {
+    isSorting = true;
+    for (let i = 1; i < data.length && isSorting; i++) {
         let key = data[i];
         let j = i - 1;
 
-        while (j >= 0 && data[j] > key) {
+        while (j >= 0 && data[j] > key && isSorting) {
             data[j + 1] = data[j];
             j--;
             updateChart(data);
-            await sleep(500); // Vizualizare lentă
+            await sleep(500);
         }
         data[j + 1] = key;
         updateChart(data);
         await sleep(500);
     }
-    correctAlgorithm = 'Insertion Sort';
+    if (isSorting) correctAlgorithm = 'Insertion Sort';
+    isSorting = false;
 }
 
 function checkGuess(guess) {
@@ -135,6 +147,32 @@ function checkGuess(guess) {
         resultMessage.innerText = `Wrong! The algorithm was actually ${correctAlgorithm}.`;
         resultMessage.style.color = 'red';
     }
+}
+
+let resetTriggered = false;
+
+function resetQuiz() {
+    isSorting = false;
+    resetTriggered = true;
+
+    data = [];
+    correctAlgorithm = '';
+
+    sortingChart.data.datasets[0].data = data;
+    sortingChart.update();
+
+    const resultMessage = document.getElementById('resultMessage');
+    resultMessage.innerText = '';
+
+    document.querySelectorAll('.guessButton').forEach(button => {
+        button.disabled = false;
+    });
+
+    console.log("Sorting process has been reset.");
+
+    setTimeout(() => {
+        resetTriggered = false;
+    }, 100);
 }
 
 // Initialize the chart
@@ -160,4 +198,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('startButton').addEventListener('click', startSorting);
+    document.getElementById('resetButton').addEventListener('click', resetQuiz);
 });

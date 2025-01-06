@@ -1,0 +1,112 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #1a73e8, #003b70);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.container {
+  text-align: center;
+  max-width: 800px;
+  width: 100%;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+#sortCanvas {
+  border: 2px solid #fff;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 700px;
+  height: 400px;
+  display: block;
+  margin: 0 auto 20px;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #feb47b, #ff7e5f);
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+button:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+button#shuffle {
+  background: linear-gradient(135deg, #4CAF50, #81C784);
+}
+
+button#shuffle:hover {
+  background: linear-gradient(135deg, #81C784, #4CAF50);
+}
+
+button#shuffle:active {
+  background: linear-gradient(135deg, #388E3C, #66BB6A);
+}
+
+button#reset {
+  background: linear-gradient(135deg, #ff4757, #ff6b81);
+}
+
+button#reset:hover {
+  background: linear-gradient(135deg, #ff6b81, #ff4757);
+}
+
+button#reset:active {
+  background: linear-gradient(135deg, #e84118, #ff6348);
+}
+
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  button {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+
+  #sortCanvas {
+    height: 300px;
+  }
+}

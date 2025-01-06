@@ -4,7 +4,13 @@ canvas.width = 800;
 canvas.height = 400;
 const ARRAY_SIZE = 100;
 let data = [];
-let darkMode = false; 
+let darkMode = false;
+let initialData = [];
+
+function resetArray() {
+  data = [...initialData];
+  drawArray(data);
+}
 
 function toggleDarkMode() {
   darkMode = !darkMode;
@@ -14,24 +20,25 @@ function toggleDarkMode() {
 
 function shuffleArray() {
   data = Array.from({ length: ARRAY_SIZE }, () => Math.floor(Math.random() * canvas.height));
+  initialData = [...data];
   drawArray(data);
 }
 
 function drawArray(array, highlighted = [], pivot = -1) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const barWidth = canvas.width / array.length;
-  
+
   array.forEach((value, index) => {
     let color = 'aqua';
 
- 
+
     if (index === pivot) {
       color = 'lime';
     }
     else if (highlighted.includes(index)) {
       color = 'red';
     }
-    
+
     if (darkMode) {
       ctx.fillStyle = color;
     } else {
@@ -42,7 +49,7 @@ function drawArray(array, highlighted = [], pivot = -1) {
     ctx.shadowBlur = 8;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 4;
-    
+
     ctx.fillRect(index * barWidth, canvas.height - value, barWidth - 2, value);
   });
 }
@@ -91,7 +98,7 @@ async function partition(arr, left, right) {
       await animateSwap(i, pivotIndex);
       pivotIndex++;
     }
-    drawArray(arr, [i, pivotIndex], right); 
+    drawArray(arr, [i, pivotIndex], right);
     await new Promise(resolve => setTimeout(resolve, 50));
   }
   await animateSwap(pivotIndex, right);

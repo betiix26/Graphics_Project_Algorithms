@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sort Algorithms Visualization</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="visual_algorithms.css">
 </head>
+
 <body>
   <div class="container">
     <h1>Visual Sort Algorithms</h1>
@@ -13,12 +15,13 @@
     <div class="controls">
       <button onclick="startBubbleSort()">Bubble Sort</button>
       <button onclick="startMergeSort()">Merge Sort</button>
-      <button onclick="shuffleArray()">Shuffle</button>
       <button onclick="startQuickSort()">Quick Sort</button>
-
+      <button id="shuffle" onclick="shuffleArray()">Shuffle</button>
+      <button id="reset" onclick="resetArray()">Reset</button>
     </div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
-  <script src="script.js"></script>
+  <script src="visual_algorithms.js"></script>
 </body>
+
 </html>

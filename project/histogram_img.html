@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Image Histogram</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #1a73e8, #003b70);
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin: 20px 0;
+      color: #f9f9f9;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      text-align: center;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    canvas {
+      background-color: #ffffff;
+      border-radius: 10px;
+      margin-top: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    input,
+    button {
+      padding: 12px;
+      margin: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 25px;
+      outline: none;
+    }
+
+    button {
+      background: linear-gradient(135deg, #56ab2f, #a8e063);
+      color: #ffffff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #3c8d2b, #89d35c);
+    }
+
+    #imageInput {
+      display: none;
+    }
+
+    .image-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 15px;
+      margin-top: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .image-container h2 {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      color: #f1f1f1;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Image Histogram</h1>
+
+    <!-- Section for uploading image -->
+    <div>
+      <input type="file" id="imageInput" accept="image/*" onchange="loadImage(event)">
+      <button onclick="document.getElementById('imageInput').click()">Upload Image</button>
+    </div>
+
+    <!-- Histogram chart -->
+    <canvas id="histogramChart" width="800" height="400"></canvas>
+
+    <!-- Uploaded image section -->
+    <div class="image-container">
+      <h2>Uploaded Image</h2>
+      <img id="uploadedImage" src="" alt="Uploaded Image" />
+    </div>
+  </div>
+
+  <script>
+    let chartInstance;
+
+    // Function to load an image
+    function loadImage(event) {
+      const image = document.getElementById('uploadedImage');
+      image.src = URL.createObjectURL(event.target.files[0]);
+      image.onload = () => {
+        generateHistogramFromImageRGB(image);
+      };
+    }
+
+    // Function to generate RGB histogram from an image
+    function generateHistogramFromImageRGB(image) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = image.width;
+      canvas.height = image.height;
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      const redFrequency = new Array(256).fill(0);
+      const greenFrequency = new Array(256).fill(0);
+      const blueFrequency = new Array(256).fill(0);
+
+      for (let i = 0; i < data.length; i += 4) {
+        redFrequency[data[i]]++;
+        greenFrequency[data[i + 1]]++;
+        blueFrequency[data[i + 2]]++;
+      }
+
+      const labels = Array.from({ length: 256 }, (_, i) => i);
+      updateChart(labels, [redFrequency, greenFrequency, blueFrequency], ["Red", "Green", "Blue"]);
+    }
+
+    // Function to update the chart
+    function updateChart(labels, data, datasetLabels) {
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      const ctx = document.getElementById("histogramChart").getContext("2d");
+      const datasets = datasetLabels.map((label, i) => ({
+        label: label,
+        data: data[i],
+        backgroundColor: ["rgba(231, 76, 60, 0.7)", "rgba(46, 204, 113, 0.7)", "rgba(52, 152, 219, 0.7)"][i],
+        borderColor: ["rgba(231, 76, 60, 1)", "rgba(46, 204, 113, 1)", "rgba(52, 152, 219, 1)"][i],
+        borderWidth: 1,
+      }));
+
+      chartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: datasets,
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Intensity",
+                color: "#ffffff",
+              },
+              ticks: {
+                color: "#ffffff",
+                maxTicksLimit: 20,
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Frequency",
+                color: "#ffffff",
+              },
+              ticks: {
+                beginAtZero: true,
+                color: "#ffffff",
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: "#ffffff",
+              },
+            },
+          },
+        },
+      });
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Guess the Sorting Algorithm</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a73e8, #003b70);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        #quizContainer {
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        canvas#sortingChart {
+            border: 2px solid #ffffff;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffffff;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button#resetButton {
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+        }
+
+        button#resetButton:hover {
+            background: linear-gradient(135deg, #ff6b81, #ff4757);
+        }
+
+        button#resetButton:active {
+            background: linear-gradient(135deg, #e84118, #ff6348);
+        }
+
+        #guessContainer p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        #resultMessage {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #f39c12;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .guessButton {
+            width: 100%;
+            max-width: 200px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            #quizContainer {
+                padding: 15px;
+            }
+
+            canvas#sortingChart {
+                height: 150px;
+            }
+
+            button {
+                font-size: 0.9rem;
+                padding: 8px 15px;
+            }
+
+            #guessContainer p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="quizContainer">
+        <h1>Guess the Sorting Algorithm!</h1>
+        <canvas id="sortingChart" width="400" height="200"></canvas>
+        <button id="startButton">Start Sorting</button>
+        <button id="resetButton">Reset</button>
+
+        <div id="guessContainer">
+            <p>Select the algorithm you think was used:</p>
+            <button class="guessButton" onclick="checkGuess('Bubble Sort')">Bubble Sort</button>
+            <button class="guessButton" onclick="checkGuess('Quick Sort')">Quick Sort</button>
+            <button class="guessButton" onclick="checkGuess('Merge Sort')">Merge Sort</button>
+            <button class="guessButton" onclick="checkGuess('Insertion Sort')">Insertion Sort</button>
+        </div>
+        <div id="resultMessage"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="quiz_algorithms.js"></script>
+</body>
+
+</html>

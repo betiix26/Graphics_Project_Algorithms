@@ -1,86 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home</title>
   <style>
     /* General styles */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #181818;
-    color: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
-    margin: 0;
-}
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      position: relative;
+    }
 
-h1 {
-    margin-bottom: 20px;
-}
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
 
-p {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-}
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 40px;
+    }
 
-/* Container styles */
-.container {
-    width: 80%;
-    text-align: center;
-}
+    /* Button container */
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
 
-/* Button styles */
-button {
-    padding: 10px 20px;
-    margin: 10px;
-    cursor: pointer;
-    background-color: #3498db;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-}
+    /* Button styles */
+    button {
+      padding: 15px 30px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: #ffffff;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
 
-button:hover {
-    background-color: #2980b9;
-}
+    button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    }
 
+    /* Background animation */
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .background span {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: move 10s infinite;
+    }
+
+    .background span:nth-child(1) {
+      top: 10%;
+      left: 20%;
+      animation-delay: 0s;
+    }
+
+    .background span:nth-child(2) {
+      top: 30%;
+      left: 70%;
+      animation-delay: 2s;
+    }
+
+    .background span:nth-child(3) {
+      top: 50%;
+      left: 40%;
+      animation-delay: 4s;
+    }
+
+    .background span:nth-child(4) {
+      top: 70%;
+      left: 10%;
+      animation-delay: 6s;
+    }
+
+    .background span:nth-child(5) {
+      top: 85%;
+      left: 80%;
+      animation-delay: 8s;
+    }
+
+    @keyframes move {
+
+      0%,
+      100% {
+        transform: translateY(0) translateX(0) scale(1);
+      }
+
+      50% {
+        transform: translateY(50px) translateX(-50px) scale(1.2);
+      }
+    }
   </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Hello</h1>
-        <p>Explore the Algorithms</p>
-        <div class="button-group">
-          <button onclick="goToPathfindingPage()">Start A*</button>
-          <button onclick="goToPathAlgorithmsPage()">Path Algorithms</button>
-          <button onclick="goToAlgorithmsVisualizerPage()">Algorithms Visualizer</button>
-          <button onclick="goToGamePage()">Game</button>
-          <button onclick="goToQuizPage()">Quiz</button>
-        </div>
-      </div>
+  <div class="background">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <div class="container">
+    <h1>Welcome to the Hub</h1>
+    <p>Explore a variety of exciting algorithms and visualizations.</p>
+    <div class="button-group">
+      <button onclick="goToPathfindingPage()">Start A*</button>
+      <button onclick="goToPathAlgorithmsPage()">Path Algorithms</button>
+      <button onclick="goToAlgorithmsVisualizerPage()">Algorithms Visualizer</button>
+      <button onclick="goToGamePage()">BFS/DFS Game</button>
+      <button onclick="goToQuizPage()">Algorithms Quiz</button>
+      <button onclick="goToHistogramPage()">Histogram</button>
+      <button onclick="goToHistogramImagePage()">Image Histogram</button>
+    </div>
+  </div>
 
   <script>
     function goToPathfindingPage() {
-      window.location.href = "index2.html"; 
+      window.location.href = "algorithm_A.html";
     }
     function goToPathAlgorithmsPage() {
-      window.location.href = "index1.html"; 
+      window.location.href = "path_algorithm.html";
     }
     function goToAlgorithmsVisualizerPage() {
-      window.location.href = "index.html"; 
+      window.location.href = "visual_algorithms.html";
     }
     function goToGamePage() {
-      window.location.href = "game.html"; 
+      window.location.href = "bfs_dfs_game.html";
     }
     function goToQuizPage() {
-      window.location.href = "quiz.html"; 
+      window.location.href = "quiz_algorithms.html";
+    }
+    function goToHistogramPage() {
+      window.location.href = "histogram.html";
+    }
+    function goToHistogramImagePage() {
+      window.location.href = "histogram_img.html";
     }
   </script>
 </body>
+
 </html>

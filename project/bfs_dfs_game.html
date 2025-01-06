@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Simulation</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            background: rgba(0, 0, 0, 0.2);
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
+            font-size: 1.5rem;
+        }
+
+        #graphContainer {
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(13, 3, 39, 0.6);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .node {
+            fill: #3498db;
+            cursor: pointer;
+        }
+
+        .node.active {
+            fill: #e74c3c;
+        }
+
+        .node.selected {
+            fill: #f1c40f;
+        }
+
+        .edge {
+            stroke: #000;
+            stroke-width: 2;
+        }
+
+        .edge.active {
+            stroke: #e74c3c;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffffff;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button#resetGraph {
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+        }
+
+        button#resetGraph:hover {
+            background: linear-gradient(135deg, #ff6b81, #ff4757);
+        }
+
+        button#resetGraph:active {
+            background: linear-gradient(135deg, #e84118, #ff6348);
+        }
+    </style>
+</head>
+<header>
+    Graph Simulation
+</header>
+
+<body>
+    <div id="graphContainer">
+        <svg id="graph" width="800" height="600"></svg>
+        <button id="startDFS">Start DFS</button>
+        <button id="startBFS">Start BFS</button>
+        <button id="addNode">Add Node</button>
+        <button id="resetGraph">Reset Graph</button>
+        <div id="info">Information: </div>
+        <label for="speed">Animation speed (ms):</label>
+        <input type="number" id="speed" value="1000" min="100" />
+    </div>
+    <script>
+        const svg = document.getElementById('graph');
+        const nodes = [
+            { id: 1, x: 100, y: 100 },
+            { id: 2, x: 300, y: 100 },
+            { id: 3, x: 100, y: 300 },
+            { id: 4, x: 300, y: 300 },
+            { id: 5, x: 200, y: 200 }
+        ];
+        const edges = [
+            { source: 1, target: 2 },
+            { source: 1, target: 3 },
+            { source: 2, target: 4 },
+            { source: 3, target: 4 },
+            { source: 5, target: 1 }
+        ];
+
+        let selectedNode = null;
+
+        function drawGraph() {
+            svg.innerHTML = ''; // Reset the graph
+            // Draw edges
+            edges.forEach(edge => {
+                const sourceNode = nodes.find(n => n.id === edge.source);
+                const targetNode = nodes.find(n => n.id === edge.target);
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', sourceNode.x);
+                line.setAttribute('y1', sourceNode.y);
+                line.setAttribute('x2', targetNode.x);
+                line.setAttribute('y2', targetNode.y);
+                line.classList.add('edge');
+                svg.appendChild(line);
+            });
+
+            // Draw nodes
+            nodes.forEach(node => {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', node.x);
+                circle.setAttribute('cy', node.y);
+                circle.setAttribute('r', 20);
+                circle.classList.add('node');
+                circle.setAttribute('data-id', node.id);
+                circle.addEventListener('click', () => selectNode(node));
+                svg.appendChild(circle);
+
+                // Add label
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', node.x);
+                text.setAttribute('y', node.y + 5);
+                text.setAttribute('text-anchor', 'middle');
+                text.textContent = node.id;
+                svg.appendChild(text);
+            });
+        }
+
+        function selectNode(node) {
+            // Reset the color of previously selected node
+            if (selectedNode && selectedNode.id !== node.id) {
+                document.querySelector(`.node[data-id="${selectedNode.id}"]`).classList.remove('selected');
+            }
+
+            // Set the selected node to the new one
+            selectedNode = node;
+            // Add "selected" class (yellow color)
+            document.querySelector(`.node[data-id="${node.id}"]`).classList.add('selected');
+            document.getElementById('info').innerText = `Selected node: ${node.id}`;
+        }
+
+        function highlightNode(nodeId, color) {
+            const node = document.querySelector(`.node[data-id="${nodeId}"]`);
+            node.classList.add('active');
+            node.style.fill = color;
+            node.animate([
+                { transform: 'scale(1)' },
+                { transform: 'scale(1.2)' },
+                { transform: 'scale(1)' }
+            ], {
+                duration: 500,
+                iterations: 1
+            });
+        }
+
+        async function dfs(startNodeId) {
+            const speed = document.getElementById('speed').value;
+            const stack = [startNodeId];
+            const visited = new Set();
+            while (stack.length) {
+                const nodeId = stack.pop();
+                if (!visited.has(nodeId)) {
+                    visited.add(nodeId);
+                    highlightNode(nodeId, 'red'); // DFS: Red
+                    await sleep(speed);
+                    const neighbors = edges.filter(e => e.source === nodeId || e.target === nodeId);
+                    neighbors.forEach(edge => {
+                        const neighborId = edge.source === nodeId ? edge.target : edge.source;
+                        stack.push(neighborId);
+                    });
+                }
+            }
+        }
+
+        async function bfs(startNodeId) {
+            const queue = [startNodeId];
+            const visited = new Set();
+            while (queue.length) {
+                const nodeId = queue.shift();
+                if (!visited.has(nodeId)) {
+                    visited.add(nodeId);
+                    highlightNode(nodeId, 'blue'); // BFS: Blue
+                    await sleep(1000);
+                    const neighbors = edges.filter(e => e.source === nodeId || e.target === nodeId);
+                    neighbors.forEach(edge => {
+                        const neighborId = edge.source === nodeId ? edge.target : edge.source;
+                        queue.push(neighborId);
+                    });
+                }
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Event listeners for the start buttons
+        document.getElementById('startDFS').addEventListener('click', () => {
+            if (selectedNode) {
+                dfs(selectedNode.id);
+            }
+        });
+
+        document.getElementById('startBFS').addEventListener('click', () => {
+            if (selectedNode) {
+                bfs(selectedNode.id);
+            }
+        });
+
+        document.getElementById('addNode').addEventListener('click', () => {
+            const newNodeId = nodes.length + 1;
+            nodes.push({ id: newNodeId, x: Math.random() * 800, y: Math.random() * 600 });
+
+            // Check if a node is selected to create an edge
+            if (selectedNode) {
+                edges.push({ source: selectedNode.id, target: newNodeId });
+                alert(`Edge added between node ${selectedNode.id} and node ${newNodeId}.`);
+            } else {
+                alert("Select an existing node to create an edge!");
+            }
+
+            drawGraph(); // Redraw the graph
+        });
+
+        document.getElementById('resetGraph').addEventListener('click', () => {
+            // Reset the selected node and color all nodes back to default
+            selectedNode = null;
+            document.querySelectorAll('.node').forEach(node => {
+                node.classList.remove('selected', 'active');
+                node.style.fill = '#3498db'; // Reset to default color (blue)
+            });
+            drawGraph();
+        });
+
+        // Draw the graph initially
+        drawGraph();
+    </script>
+</body>
+
+</html>
